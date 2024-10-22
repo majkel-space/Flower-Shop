@@ -1,0 +1,3 @@
+# Ignore all files with -o in their names
+*-o
+*.o
