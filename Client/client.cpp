@@ -1,10 +1,17 @@
-#include <boost/asio.hpp>
-#include <iostream>
-#include <string>
+#include "client.hpp"
 
-using tcpip = boost::asio::ip::tcp;
+void Client::SendMessage()
+{
+    boost::asio::io_service io_service;
+    tcpip::socket socket(io_service);
+    socket.connect( tcpip::endpoint( boost::asio::ip::address::from_string("127.0.0.1"), 1234 ));
+    boost::system::error_code error;
 
-void GenerateMessage(tcpip::socket& socket, boost::system::error_code& error)
+    GenerateMessage(socket, error);
+    GetResponse(socket, error);
+}
+
+void Client::GenerateMessage(tcpip::socket& socket, boost::system::error_code& error)
 {
     const std::string msg = "Hello from Client!\n";
 
@@ -19,7 +26,7 @@ void GenerateMessage(tcpip::socket& socket, boost::system::error_code& error)
     }
 }
 
-void GetResponse(tcpip::socket& socket, boost::system::error_code& error)
+void Client::GetResponse(tcpip::socket& socket, boost::system::error_code& error)
 {
     boost::asio::streambuf receive_buffer;
     boost::asio::read(socket, receive_buffer, boost::asio::transfer_all(), error);
@@ -32,21 +39,4 @@ void GetResponse(tcpip::socket& socket, boost::system::error_code& error)
         const char* data = boost::asio::buffer_cast<const char*>(receive_buffer.data());
         std::cout << data << std::endl;
     }
-}
-
-void SendMessage()
-{
-    boost::asio::io_service io_service;
-    tcpip::socket socket(io_service);
-    socket.connect( tcpip::endpoint( boost::asio::ip::address::from_string("127.0.0.1"), 1234 ));
-    boost::system::error_code error;
-
-    GenerateMessage(socket, error);
-    GetResponse(socket, error);
-}
-
-int main()
-{
-    SendMessage();
-    return 0;
 }

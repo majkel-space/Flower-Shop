@@ -1,3 +1,5 @@
-# Ignore all files with -o in their names
+# Ignore all files execute files and vscode dependancy
 *-o
 *.o
+.vscode
+build/
