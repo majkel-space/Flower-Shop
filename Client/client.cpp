@@ -3,16 +3,6 @@
 #include <unistd.h>
 #include "client.hpp"
 
-Client::Client()
-{
-    CreateSocket();
-}
-
-Client::~Client()
-{
-    close(socket_);
-}
-
 void Client::CreateSocket()
 {
     socket_ = socket(AF_INET, SOCK_STREAM, 0);
@@ -27,6 +17,7 @@ void Client::CreateSocket()
 
 void Client::ConnectToServer()
 {
+    CreateSocket();
     if (inet_pton(AF_INET, "127.0.0.1", &server_address_.sin_addr) <= 0)
     {
         std::cerr << "Error: Invalid Server address\n";
@@ -39,20 +30,27 @@ void Client::ConnectToServer()
 
     SendMessage();
     GetResponse();
+    close(socket_);
 }
-
 
 void Client::SendMessage()
 {
     const char* msg = "Hello from Client\n";
-    send(socket_, msg, strlen(msg), 0);
+    send(socket_, msg, strlen(msg) + 1, 0);
 }
 
 void Client::GetResponse()
 {
     const int size = 1024;
-    char buffer[size];
-    int bytes_read = read(socket_, buffer, size);
-    std::cout << buffer << std::endl;
-
+    char buffer[size] = {0};
+    int bytes_read = read(socket_, buffer, size - 1);
+    if (bytes_read < 0)
+    {
+        std::cerr << "Error: Reading from Server\n";
+    }
+    else
+    {
+        buffer[bytes_read] = '\0';
+        std::cout << buffer << std::endl;
+    }
 }

@@ -14,12 +14,15 @@ Server::~Server()
 
 void Server::Listen()
 {
-    puts("Waiting for incoming connections...");
-    listen(socket_ , 3);
-
-    const auto client_socket = AcceptMessage();
-    ReadMessage(client_socket);
-    WriteMessage(client_socket);
+    while (true)
+    {
+        puts("Waiting for incoming connections...");
+        listen(socket_ , 3);
+        const auto client_socket = AcceptMessage();
+        ReadMessage(client_socket);
+        WriteMessage(client_socket);
+        close(client_socket);
+    }
 }
 
 void Server::CreateSocket()
@@ -54,12 +57,21 @@ int Server::AcceptMessage()
 
 void Server::ReadMessage(const int& client_socket)
 {
-    char buffer[1000];
-    read(client_socket, buffer, sizeof(buffer));
-    std::cout << buffer << std::endl;
+    const int size = 1024;
+    char buffer[size] = {0};
+    int bytes_read = read(client_socket, buffer, size - 1);
+     if (bytes_read < 0)
+    {
+        std::cerr << "Error: Reading from Client\n";
+    }
+    else
+    {
+        buffer[bytes_read] = '\0';
+        std::cout << buffer << std::endl;
+    }
 }
 
 void Server::WriteMessage(const int& client_socket)
 {
-    write(client_socket, server_message, sizeof(server_message));
+    write(client_socket, server_message, strlen(server_message) + 1);
 }

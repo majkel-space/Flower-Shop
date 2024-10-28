@@ -6,8 +6,8 @@
 class Client
 {
   public:
-    Client();
-    ~Client();
+    Client() = default;
+    ~Client() = default;
 
     void ConnectToServer();
 
