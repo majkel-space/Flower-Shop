@@ -1,6 +1,16 @@
 #include <iostream>
-#include <unistd.h>	//write
+#include <unistd.h>
+#include "connection_handler.hpp"
 #include "server.hpp"
+
+void* HandleClient(void* arg)
+{
+    int client_socket = *(int*)arg;
+    ConnectionHandler handler(client_socket);
+    handler.HandleConnection();
+    delete (int*)arg;
+    return nullptr;
+}
 
 Server::Server()
 {
@@ -17,11 +27,20 @@ void Server::Listen()
     while (true)
     {
         puts("Waiting for incoming connections...");
-        listen(socket_ , 3);
-        const auto client_socket = AcceptMessage();
-        ReadMessage(client_socket);
-        WriteMessage(client_socket);
-        close(client_socket);
+        listen(socket_, 3);
+        auto* client_socket = new int(AcceptMessage());
+        if (*client_socket >= 0)
+        {
+            if (pthread_create(&client_thread_, nullptr, HandleClient, client_socket) != 0)
+            {
+                std::cerr << "Error: Unable to create thread\n";
+                delete client_socket;
+            }
+            else
+            {
+                pthread_detach(client_thread_);
+            }
+        }
     }
 }
 
@@ -53,25 +72,4 @@ int Server::AcceptMessage()
         std::cerr << "Error: Accept Failed\n";
     }
     return client_socket;
-}
-
-void Server::ReadMessage(const int& client_socket)
-{
-    const int size = 1024;
-    char buffer[size] = {0};
-    int bytes_read = read(client_socket, buffer, size - 1);
-     if (bytes_read < 0)
-    {
-        std::cerr << "Error: Reading from Client\n";
-    }
-    else
-    {
-        buffer[bytes_read] = '\0';
-        std::cout << buffer << std::endl;
-    }
-}
-
-void Server::WriteMessage(const int& client_socket)
-{
-    write(client_socket, server_message, strlen(server_message) + 1);
 }
