@@ -1,16 +1,8 @@
 #include <iostream>
+#include <thread>
 #include <unistd.h>
 #include "connection_handler.hpp"
 #include "server.hpp"
-
-void* HandleClient(void* arg)
-{
-    int client_socket = *(int*)arg;
-    ConnectionHandler handler(client_socket);
-    handler.HandleConnection();
-    delete (int*)arg;
-    return nullptr;
-}
 
 Server::Server()
 {
@@ -28,18 +20,13 @@ void Server::Listen()
     {
         puts("Waiting for incoming connections...");
         listen(socket_, 3);
-        auto* client_socket = new int(AcceptMessage());
-        if (*client_socket >= 0)
+        auto client_socket = AcceptMessage();
+        if (client_socket >= 0)
         {
-            if (pthread_create(&client_thread_, nullptr, HandleClient, client_socket) != 0)
-            {
-                std::cerr << "Error: Unable to create thread\n";
-                delete client_socket;
-            }
-            else
-            {
-                pthread_detach(client_thread_);
-            }
+            ConnectionHandler connection_handler(client_socket);
+            std::thread client_thread(connection_handler);
+            client_thread.detach();
+
         }
     }
 }

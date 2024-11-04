@@ -1,6 +1,5 @@
 
 #include <arpa/inet.h>	//inet_addr
-#include <pthread.h>
 #include <stdio.h>
 #include <string.h>	//strlen
 #include <sys/socket.h>
@@ -20,5 +19,4 @@ class Server
     struct sockaddr_in server, client;
     int socket_;
     const u_int16_t port = 1234;
-    pthread_t client_thread_;
 };

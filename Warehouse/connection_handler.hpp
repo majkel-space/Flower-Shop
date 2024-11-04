@@ -1,10 +1,15 @@
 class ConnectionHandler
 {
   public:
-    ConnectionHandler(int);
-    void HandleConnection();
+    explicit ConnectionHandler(int);
+
+    void operator()()
+    {
+        HandleConnection();
+    }
 
   private:
+    void HandleConnection();
     void ReadMessage();
     void WriteMessage();
 
