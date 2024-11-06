@@ -3,31 +3,22 @@ Client Server multithreaded application
 
 ## Project description
 Flower Shop
--  Warehouse
+- Warehouse with 3 delivery cars (3 order handling threads)
+- Warehouse each server thread will listen to its main server port
+- Warehouse infninit stock with FIFO queue to gather all the orders
+- Warehouse delivery of each order have random time
+- Client is placing the order in a PRODUCER-CONSUMER structure
+- Client 10 clients with orders generated in random times, all will use same socket
 
-10 Clients who process orders in random durations
-QUESTION: not process but generate orders?
-QUESTION: they all will use the same socket
-
-Server / Warehouse&Management
-Infinite Stock
-We only have 3 different Delivery Cars
-QUESTION: this would be 3 threads with separate adress to which they are binded?
-
-1 Server Thread : listener of its main server port -> place the order in a PRODUCER-CONSUMER structure
-Delivery Car Threads will consume jobs as FIFO from the queue
-Delivery times will be random in their own loop
-QUESTION: "random in their own loop"
-
-Goals: POSIX
-Using blocking/non-blocking socket connections
-Using mutex/conditional_variables for shared memory spaces between threads
-
-- select, epoll
+## Goals
+- POSIX library to handle connections
+- Signal handler
+- blocking/non-blocking socket connections
+- std::threads, std::atomic
+- atomic_bool for handling break of connections
+- mutex and conditional_variables for shared memory spaces between threads
 
 Emplace threads starting and joining in ctors and dtors
-Should have a signal handler
-use std::atomic, std::conditional_variables, std::mutex, lock_guards....
 
 
 ## TODO

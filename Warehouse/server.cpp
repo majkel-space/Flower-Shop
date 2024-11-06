@@ -44,6 +44,15 @@ void Server::CreateSocket()
 
     puts("Socket created");
 
+    // Socket might be block by system for some time (bind might failed then),
+    // this method with SO_REUSEADDR allow to reuse the cosket adress once again
+    if (setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
+    {
+        std::cerr << "Error: setsockopt failed\n";
+        close(socket_);
+        return;
+    }
+
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = INADDR_ANY;
     server.sin_port = htons(port);
@@ -51,6 +60,8 @@ void Server::CreateSocket()
     if( bind(socket_, (struct sockaddr *)&server , sizeof(server)) < 0)
     {
         std::cerr << "Error: Bind Failed\n";
+        close(socket_);
+        return;
     }
 }
 

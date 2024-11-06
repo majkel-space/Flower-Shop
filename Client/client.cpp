@@ -26,6 +26,8 @@ void Client::ConnectToServer()
     if (connect(socket_, (struct sockaddr *)&server_address_, sizeof(server_address_)) < 0)
     {
         std::cerr << "Error: Connection Failed\n";
+        close(socket_);
+        return;
     }
 
     SendMessage();
