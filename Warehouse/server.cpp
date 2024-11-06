@@ -1,8 +1,12 @@
+#include <atomic>
+#include <chrono>
 #include <iostream>
 #include <thread>
 #include <unistd.h>
 #include "connection_handler.hpp"
 #include "server.hpp"
+
+extern std::atomic<bool> run;
 
 Server::Server()
 {
@@ -16,7 +20,7 @@ Server::~Server()
 
 void Server::Listen()
 {
-    while (true)
+    while (run)
     {
         puts("Waiting for incoming connections...");
         listen(socket_, 3);
@@ -26,7 +30,6 @@ void Server::Listen()
             ConnectionHandler connection_handler(client_socket);
             std::thread client_thread(connection_handler);
             client_thread.detach();
-
         }
     }
 }
@@ -38,6 +41,7 @@ void Server::CreateSocket()
     {
         std::cerr << "Error: Socket not created\n";
     }
+
     puts("Socket created");
 
     server.sin_family = AF_INET;

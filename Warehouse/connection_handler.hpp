@@ -15,5 +15,3 @@ class ConnectionHandler
 
     int client_socket_{};
 };
-
-void* HandleClient(void* arg);

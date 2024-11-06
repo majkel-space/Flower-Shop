@@ -31,9 +31,7 @@ use std::atomic, std::conditional_variables, std::mutex, lock_guards....
 
 
 ## TODO
-- enum class for managing the type of flowers (with enum values representing time needed for preparation)
-- handling 10 diffrent clients
-- each client random order generator
-- server order queue
-- starting with one thread handling diffrent order types
-- 3 thread (representing delivery cars) to handle orders
+- Cient: random time order generator
+- Cient: use 10 clients
+- Server: orders queue
+- Server: random time generator for handling orders
