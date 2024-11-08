@@ -1,28 +1,21 @@
-# Flower-Shop
-Client Server multithreaded application
+# Client Server multithreaded application
 
 ## Project description
-Flower Shop
-- Warehouse with 3 delivery cars (3 order handling threads)
-- Warehouse each server thread will listen to its main server port
-- Warehouse infninit stock with FIFO queue to gather all the orders
-- Warehouse delivery of each order have random time
-- Client is placing the order in a PRODUCER-CONSUMER structure
-- Client 10 clients with orders generated in random times, all will use same socket
+Project show client server connection with use of std::thread and POSIX libraries.
+There is just one client so there is no need to use asynchronus socket listening with non blocking socket mechanism.
+Used methodes:
+- read(), write() for handling messages in ClientHandler
+- read(), send() for handling messages on Client side
+- socket() for creating sockets
+- connect() on Client side
+- bind() to bind socket with adresses
+- listen() for catching any incomming connections
+- accept() on Server side for catching connection from Client side
 
-## Goals
-- POSIX library to handle connections
-- Signal handler
-- blocking/non-blocking socket connections
-- std::threads, std::atomic
-- atomic_bool for handling break of connections
-- mutex and conditional_variables for shared memory spaces between threads
-
-Emplace threads starting and joining in ctors and dtors
-
-
-## TODO
-- Cient: random time order generator
-- Cient: use 10 clients
-- Server: orders queue
-- Server: random time generator for handling orders
+## Run
+1. build main CMake
+	navigate to build folder
+	enter command 'cmake --build .'
+2. Run server with ./Warehouse/server.o
+3. Run client with ./Client/client.o
+4. To stop hit 'Ctrl+C' on server console
